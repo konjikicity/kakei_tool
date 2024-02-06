@@ -2,13 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Services\DashBoardService;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 class DashBoardController extends Controller
 {
-    public function index()
+    private $dashBoardService;
+
+    public function __construct(DashBoardService $dashBoardService)
     {
-        return Inertia::render('Dashboard');
+        $this->dashBoardService = $dashBoardService;
+    }
+
+    public function index(int $year = 0)
+    {
+        $yearMonths = $this->dashBoardService->index(intval(Carbon::now()->format('Y')));
+
+        if ($year) {
+            $yearMonths = $this->dashBoardService->index($year);
+        }
+
+        return Inertia::render('Dashboard', ['yearMonths' => $yearMonths]);
     }
 }
